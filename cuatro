@@ -44,4 +44,4 @@ valida "$1" "$2"
 cDeComentarios
 
 #Cuento la cantidad de lineas // que hay en un archivo
-grep -c "//" ./Procesamiento/codigo
+cDeComentarios=grep -c "//" ./Procesamiento/codigo
