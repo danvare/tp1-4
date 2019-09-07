@@ -1,1 +1,47 @@
+#! /bin/bash
 
+#ayuda para guiar al usuario
+function ayuda(){
+	echo "Nota: Este script solo fuciona con archivos del tipo texto plano (Por ejemplo, .c, .h, .txt, etc."
+	echo "No responde adecuadamente con los del tipo .doc/.docx, .odt, etc"
+}
+
+
+#Validaciones varias
+function valida(){
+	if [ $# == 1 ] && [ "$1" == "-h" ]; then
+		ayuda
+		exit 0
+	fi
+
+#Trata de leer el directorio y sino lo manda a ayuda
+	if [ ! $# == 2 ]; then
+		echo "error 1"
+		exit 1	
+	fi
+#Veo si el argumento del directorio es vacio
+	if [ -z "$1" ]; then
+		echo "esta en blanco"
+		ayuda
+		exit 1
+	fi
+#veo si existe el directorio existe, sino 
+	if [ ! -d "$1" ]; then
+		echo "directorio no existe"
+		ayuda
+		exit 1
+	fi
+
+	if [ -z "$2" ]; then
+		echo "esta en blanco"
+		ayuda
+		exit 1
+	fi
+}
+
+valida "$1" "$2"
+
+cDeComentarios
+
+#Cuento la cantidad de lineas // que hay en un archivo
+grep -c "//" ./Procesamiento/codigo
