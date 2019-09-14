@@ -33,6 +33,7 @@ function ayuda(){
 		exit 1
 	fi
 
+#Seccion de analicis
 	if [ "$1" == "analizar"	]; then
 		awk '
 function evaluarMultiLinea(linea) {
@@ -45,8 +46,7 @@ function evaluarLineaNormal(linea, primerPalabra) {
 	else if( index(linea, "/*")) { cantComentadas= cantComentadas + 1; cantCodigos= cantCodigos + 1; boolSeguirMultilinea= 1 ; }
 	else cantCodigos= cantCodigos + 1 ; }
 BEGIN { boolSeguirMultilinea= 0; cantCodigos= 0; cantComentadas= 0 ;} 
-/./	{	if( boolSeguirMultilinea == 1 ) evaluarMultiLinea($0);
-		else evaluarLineaNormal($0, $1) ;}
+/./	{	if( boolSeguirMultilinea == 1 ) evaluarMultiLinea($0); else evaluarLineaNormal($0, $1) ;}
 END {	print "Se encontraron ", cantCodigos, " linea(s) de código y", cantComentadas, " de comentario(s)." }' $2
 		exit 0
 	fi
