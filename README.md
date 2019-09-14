@@ -1,58 +1,59 @@
-***No probe nada de lo que esta aca, pero es para basarse****
+#!/bin/bash
 
-Crear un archivo script.awk que contenga esto:---------------------------------------------
+#ayuda para guiar al usuario
+function ayuda(){
+	echo "Nota: Este script solo fuciona con archivos del tipo texto plano (Por ejemplo, .c, .h, .txt, etc."
+	echo "No responde adecuadamente con los del tipo .doc/.docx, .odt, etc"
+}
 
+#Validaciones varias
+	if [ $# == 1 ]; then
+		if [ "$1" == "-h" ] || [ "$1" == "-?" ] || [ "$1" == "-help" ]; then
+			ayuda;
+			exit 0
+		fi
+	fi
 
-	function evaluarMultiLinea(linea, cantComentadas, boolSeguirMultilinea)
-	{		
-		cantComentadas= cantComentadas + 1;
-	
-		if(index(linea, "*/")){		//			
-			boolSeguirMultilinea= "0";
-		}		
-	}
+#Veo si el argumento del directorio es vacio
+	if [ -z "$1" ]; then
+		echo "esta en blanco"
+		ayuda
+		exit 1
+	fi
 
-	function evaluarLineaNormal(linea, primerPalabra ,cantComentadas, cantCodigos, boolSeguirMultilinea)
-	{
-		if(index(primerPalabra, "//"))   //Si la primera palabra es comtario solamente agrego +1 a la cantidad comentadas
-			cantComentadas= cantComentadas + 1;
-		else if(index(linea, "//")){		//Si la linea al principio el codigo pero despues se vuelve comentario tengo que contar la linea dos veces (Segun enunciado) 
-			cantComentadas= cantComentadas + 1;
-			cantCodigos= cantCodigos + 1;			
-		}		
-		else if(index(primerPalabra, "/*")){ //Si empieza el comentario multilinea al principio de la oración entonces activo el modo de multilinea
-			cantComentadas= cantComentadas + 1;
-			boolSeguirMultilinea= "1";
-		}
-		else if(index(linea, "/*")){ //Si empieza el comentario multilinea lunego de una linea de código entonces la cuento dos veces (Segun enunciado)
-			cantComentadas= cantComentadas + 1;
-			cantCodigos= cantCodigos + 1;
-			boolSeguirMultilinea= "1";
-		}
-		else{
-			cantCodigos= cantCodigos + 1;
-		}	
-	}
+#Trata de leer el directorio y sino lo manda a ayuda
+	if [ ! $# == 2 ]; then
+		echo "error 1"
+		exit 1	
+	fi
 
+	if [ -z "$2" ]; then
+		echo "esta en blanco"
+		ayuda
+		exit 1
+	fi
 
-	BEGIN { 
-		Es_comentario_multiLinea ="0"
-		Cantidad_lineas_codigo="0"
-		Cantidad_lineas_comentadas="0" 
-	} 
-	{
-		if(Es_comentario_multiLinea == "1")
-			evaluarMultiLinea($0, Cantidad_lineas_comentadas, Es_comentario_multiLinea) //Le pasa toda la linea y el contador de comentarios
-		else
-			evaluarLineaNormal($0, $1, Cantidad_lineas_comentadas, Cantidad_lineas_codigo, Es_comentario_multiLinea) //Le pasa toda la linea y los dos contadores
-	}
+	if [ "$1" == "analizar"	]; then
+		awk '
+function evaluarMultiLinea(linea) {
+	cantComentadas= cantComentadas + 1;
+	if( index(linea, "*/") ) boolSeguirMultilinea= 0 ;}
+function evaluarLineaNormal(linea, primerPalabra) {
+	if( index(primerPalabra, "//")) cantComentadas= cantComentadas + 1;
+	else if( index(linea, "//")) { cantComentadas= cantComentadas + 1; cantCodigos= cantCodigos + 1 ; }
+	else if( index(primerPalabra, "/*")) { cantComentadas= cantComentadas + 1; boolSeguirMultilinea= 1 ; }
+	else if( index(linea, "/*")) { cantComentadas= cantComentadas + 1; cantCodigos= cantCodigos + 1; boolSeguirMultilinea= 1 ; }
+	else cantCodigos= cantCodigos + 1 ; }
+BEGIN { boolSeguirMultilinea= 0; cantCodigos= 0; cantComentadas= 0 ;} 
+/./	{	if( boolSeguirMultilinea == 1 ) evaluarMultiLinea($0);
+		else evaluarLineaNormal($0, $1) ;}
+END {	print "Se encontraron ", cantCodigos, " linea(s) de código y", cantComentadas, " de comentario(s)." }' $2
+		exit 0
+	fi
 
-	END { 
-		printf "Se encontraron %d linea(s) de código y %d de comentario(s).", Cantidad_lineas_codigo, Cantidad_lineas_comentadas;
-	}
-
-
-
-
-
--------------------------------------------------------------------------------------------------------------------------------
+#veo si existe el directorio existe, sino 
+	if [ ! -d "$1" ]; then
+		echo "directorio no existe"
+		ayuda
+		exit 1
+	fi
