@@ -1,0 +1,71 @@
+#!/bin/bash
+
+hola() {
+	awk '
+	BEGIN { print "Analisis de archivo" }
+	// { m= m + 1 }
+	/\/\// { n= n + 1 }
+	/\/\*/ { n= n + 1 }
+	END   { print "\"//\" appears in", m - n, "records." }' pruebas
+}
+
+mod() {
+	awk '
+	BEGIN { print "" }
+	// { m= m + 1 }
+	/\/\// { n= n + 1 }
+	/\/\*/ { n= n + 1 }
+	END   { print "Lineas = ", m, ", cant cod = ", m-n, ",cant comentarios =", n, ", 		porcentaje =", (m-n)/m }' pruebas
+}
+
+#lineas total //
+#comentarios total
+#porcentajes
+
+
+	awk '
+	BEGIN { cant= 0 }
+	// { if ( $1 ~ /^\// ) cant= cant+1 }
+	// { if ( $1 !~ /^\// ) cant= cant-1 }
+	END { print "This ", cant }' pruebas
+
+awk 
+function evaluarMultiLinea(linea) {
+	print "Evaluo multilinea. ";
+	cantComentadas= cantComentadas + 1;
+	if( index(linea, "*/") ) boolSeguirMultilinea= 0 ;}
+function evaluarLineaNormal(linea, primerPalabra) {
+	if( index(primerPalabra, "//")) cantComentadas= cantComentadas + 1;
+	else if( index(linea, "//")) { cantComentadas= cantComentadas + 1; cantCodigos= cantCodigos + 1 ; }
+	else if( index(primerPalabra, "/*")) { cantComentadas= cantComentadas + 1; boolSeguirMultilinea= 1 ; }
+	else if( index(linea, "/*")) { cantComentadas= cantComentadas + 1; cantCodigos= cantCodigos + 1; boolSeguirMultilinea= 1 ; }
+	else cantCodigos= cantCodigos + 1 ; }
+BEGIN { boolSeguirMultilinea= 0; cantCodigos= 0; cantComentadas= 0 ;} 
+/./	{	print boolSeguirMultilinea; if( boolSeguirMultilinea == 1 ) evaluarMultiLinea($0); evaluarLineaNormal($0, $1) ;}
+END {	print "Se encontraron ", cantCodigos, " linea(s) de código y", cantComentadas, " de comentario(s)." }' pruebas
+
+
+
+
+
+
+
+li
+li
+//
+/*
+51
+515
+1
+51
+515
+*/
+/*
+//
+*/
+li
+li
+*
+*
+*
+*
