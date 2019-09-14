@@ -99,3 +99,38 @@ cDeComentarios
 
 #Cuento la cantidad de lineas // que hay en un archivo
 cDeComentarios=grep -c "//" ./Procesamiento/codigo
+
+
+
+Sabado
+
+
+hola() {
+	awk '
+	BEGIN { print "Analisis de archivo" }
+	// { m= m + 1 }
+	/\/\// { n= n + 1 }
+	/\/\*/ { n= n + 1 }
+	END   { print "\"//\" appears in", m - n, "records." }' pruebas
+}
+
+mod() {
+	awk '
+	BEGIN { print "" }
+	// { m= m + 1 }
+	/\/\// { n= n + 1 }
+	/\/\*/ { n= n + 1 }
+	END   { print "Lineas = ", m, ", cant cod = ", m-n, ",cant comentarios =", n, ", 		porcentaje =", (m-n)/m }' pruebas
+}
+
+#lineas total //
+#comentarios total
+#porcentajes
+
+
+	awk '
+	BEGIN { cant= 0 }
+	// { if ( $1 ~ /^\// ) cant= cant+1 }
+	// { if ( $1 !~ /^\// ) cant= cant-1 }
+	END { print "This ", cant }' pruebas
+
