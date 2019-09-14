@@ -1,19 +1,11 @@
 #!/bin/bash
 
-hola() {
+mod() {
 	awk '
-	BEGIN { print "Analysis of \"li\"" }
-	/li/  { ++n }
-	END   { print "\"li\" appears in", n, "records." }' pruebas
-}
-{
-	awk '
-	BEGIN { print "Analysis of \"Codigo\"" }
-	//  { ++n }
-	END   { print "\"Lineas de codigo\" appears in", n, "records." }' pruebas
-}
-	awk '
-	BEGIN { print "Analysis of \"//\"" }
+	BEGIN { print "" }
 	// { m= m + 1 }
 	/\/\// { n= n + 1 }
-	END   { print "\"//\" appears in", m - n, "records." }' pruebas
+	/\/\*/ { n= n + 1 }
+	END   { print "Lineas = ", m, ", cant cod = ", m-n, ",cant comentarios =", n, ", porcentaje =", (m-n)/m }' pruebas
+}
+
